@@ -1,0 +1,7 @@
+{
+  "name": "unredacted-material",
+  "deidentified": false,
+  "source_ids": ["SRC-001"],
+  "expected_status": "blocked",
+  "expected_reason": "deidentification_required"
+}

@@ -1,0 +1,12 @@
+{
+  "primary_objective": "save",
+  "secondary_objective": null,
+  "content_type": "practical",
+  "legal_field": null,
+  "duration": "60s",
+  "persona": "rational",
+  "jurisdiction": null,
+  "legal_timepoint": null,
+  "output_language": "zh-CN",
+  "human_review_required": true
+}

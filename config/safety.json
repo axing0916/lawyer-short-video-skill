@@ -1,0 +1,10 @@
+{
+  "human_legal_review_required": true,
+  "deidentification_required": true,
+  "source_lock_required": true,
+  "fabricated_cases_allowed": false,
+  "fictional_teaching_scenarios_allowed": true,
+  "result_guarantees_allowed": false,
+  "performance_guarantees_allowed": false,
+  "blocking_labels": ["【待补充】", "【需核实】"]
+}

@@ -1,53 +1,9 @@
-# Obsidian files
-.obsidian/
-.obsidian/**
-*.obsidian
-
-# macOS
 .DS_Store
-
-# VS Code
-.vscode/
-*.code-workspace
-
-# Node modules
-node_modules/
-npm-debug.log
-
-# Python
 __pycache__/
-*.py[cod]
-*$py.class
-.Python
-venv/
-ENV/
-
-# IDE
-.idea/
-*.swp
-*.swo
-*~
-
-# Config files with sensitive info
-config/local-*.json
-config/secrets.*
-
-# Temporary files
-*.tmp
-*.temp
-.temp/
-
-# Generated files
-*.log
-*.bak
-*.backup
-
-# OS files
-Thumbs.db
-.DS_Store
-
-# Custom
-.env
-.env.local
-private/
-secrets/
+*.pyc
+.venv/
+outputs/private/
+inputs/private/
+*.env
+.env*
+!.env.example
