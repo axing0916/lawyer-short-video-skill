@@ -1,0 +1,8 @@
+{
+  "name": "fictional-teaching-scenario",
+  "deidentified": true,
+  "fictional": true,
+  "label": "虚构教学情景",
+  "source_ids": ["SCN-001"],
+  "expected_status": "needs_legal_review"
+}

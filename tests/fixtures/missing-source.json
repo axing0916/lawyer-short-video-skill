@@ -1,0 +1,7 @@
+{
+  "name": "missing-source",
+  "deidentified": true,
+  "source_ids": [],
+  "expected_status": "blocked",
+  "expected_reason": "source_lock_required"
+}

@@ -1,0 +1,8 @@
+{
+  "personas": {
+    "rational": {"label": "理性务实型", "allowed_claim_strength": "evidence_bound"},
+    "assertive": {"label": "强硬维权型", "allowed_claim_strength": "evidence_bound"},
+    "conciliatory": {"label": "温和调解型", "allowed_claim_strength": "evidence_bound"}
+  },
+  "fabricated_credentials_allowed": false
+}

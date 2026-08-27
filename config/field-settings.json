@@ -1,0 +1,8 @@
+{
+  "legal_fields": {
+    "private_lending": {"label": "民间借贷", "review_required": true},
+    "contract": {"label": "合同纠纷", "review_required": true},
+    "company": {"label": "公司法", "review_required": true},
+    "family": {"label": "婚姻家事", "review_required": true}
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "missing_value": null,
+  "benchmarks_provided": false,
+  "rates": {
+    "save_rate": {"numerator": "saves", "denominator": "plays"},
+    "share_rate": {"numerator": "shares", "denominator": "plays"},
+    "qualified_inquiry_rate": {"numerator": "qualified_inquiries", "denominator": "plays"},
+    "inquiry_to_engagement_rate": {"numerator": "engagements", "denominator": "qualified_inquiries"}
+  }
+}

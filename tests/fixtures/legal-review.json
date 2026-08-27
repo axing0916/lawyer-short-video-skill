@@ -1,0 +1,7 @@
+{
+  "name": "unverified-legal-rule",
+  "deidentified": true,
+  "source_ids": ["SRC-001"],
+  "legal_source_verified": false,
+  "expected_status": "needs_legal_review"
+}
