@@ -1,0 +1,4 @@
+interface:
+  display_name: "律师短视频文案系统"
+  short_description: "把已脱敏、来源明确的法律材料转为可核验口播稿"
+  default_prompt: "请先检查材料来源和脱敏状态，再按事实、法律、表达三层生成律师短视频文案；缺失项不要补造。"

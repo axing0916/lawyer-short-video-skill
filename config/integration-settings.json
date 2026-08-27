@@ -1,0 +1,7 @@
+{
+  "codex": {"enabled": true, "entrypoint": "SKILL.md"},
+  "obsidian": {"enabled": true, "mode": "markdown_files", "vault_path": null, "auto_sync": false},
+  "github": {"enabled": true, "workflow": "branch_pull_request"},
+  "workbuddy": {"enabled": false, "status": "not_implemented"},
+  "platform_publishing": {"enabled": false}
+}

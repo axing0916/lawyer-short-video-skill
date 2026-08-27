@@ -1,0 +1,8 @@
+{
+  "objectives": ["save", "discuss", "share", "explore", "trust"],
+  "content_types": ["story", "educational", "comparison", "practical"],
+  "durations": ["60s", "90s", "3min"],
+  "personas": ["rational", "assertive", "conciliatory"],
+  "max_primary_objectives": 1,
+  "max_secondary_objectives": 1
+}
