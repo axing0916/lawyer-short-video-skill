@@ -23,7 +23,7 @@ RE_ID_CARD_15 = re.compile(
     r"(?<!\d)([1-9]\d{5}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])\d{3})(?!\d)"
 )
 RE_PHONE = re.compile(
-    r"(?<!\d)(?:(?:\+?86[- ]?)?)(1[3-9]\d{9})(?!\d)"
+    r"(?<!\d)(?:\+?86[- ]?)?(1[3-9]\d{9})(?!\d)"
 )
 RE_USCI = re.compile(
     r"(?<![0-9A-HJ-NPQRTUWXY])([1-9ANY][1-9]\d{6}[0-9A-HJ-NPQRTUWXY]{10})(?![0-9A-HJ-NPQRTUWXY])"
@@ -209,8 +209,6 @@ def detect_pii(text: str) -> dict[str, Any]:
                 "description": "检测到具体司法审判/执行案号，易被检索关联公开裁判文书，具有重识别风险。"
             })
 
-        claimed_spans_by_line[line_idx] = line_spans
-
     total_count = len(high_risk) + len(medium_risk)
     detected = total_count > 0
 
@@ -248,10 +246,11 @@ def run_self_test() -> bool:
     """Run internal test cases to verify detection accuracy."""
     test_cases = [
         {
-            "text": "客户张三，身份证号为 110101199003072345，电话是 13812345678。",
+            "text": "客户张三，身份证号为 11010519491231002X，电话是 +86 13812345678。",
             "expected_high": 2,
             "expected_medium": 0,
-            "expected_types": ["id_card", "phone"]
+            "expected_types": ["id_card", "phone"],
+            "verify_checksum": True
         },
         {
             "text": "老式身份证号码：320102750101001，请注意核实。",
@@ -292,6 +291,11 @@ def run_self_test() -> bool:
         for exp_t in tc["expected_types"]:
             if exp_t not in matched_types:
                 print(f"Self-test case {idx} failed: missing expected type {exp_t}")
+                all_passed = False
+        if tc.get("verify_checksum"):
+            id_item = next((item for item in res["high_risk"] if item["type"] == "id_card"), None)
+            if not id_item or not id_item.get("checksum_valid"):
+                print(f"Self-test case {idx} failed: expected checksum_valid=True")
                 all_passed = False
 
     return all_passed
