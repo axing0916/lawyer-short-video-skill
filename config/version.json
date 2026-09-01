@@ -7,6 +7,6 @@
     "legal conclusions require human verification",
     "no automatic platform publishing",
     "no bundled cloud or WorkBuddy synchronization",
-    "no claimed performance benchmarks"
+    "performance figures in tests/performance-testing.md are local dev-environment baselines, not production SLAs"
   ]
 }

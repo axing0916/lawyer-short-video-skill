@@ -31,7 +31,11 @@ def fail(message: str, failures: list[str]) -> None:
 
 def main() -> int:
     failures: list[str] = []
-    files = [path for path in ROOT.rglob("*") if path.is_file() and ".git" not in path.parts]
+    files = [
+        path
+        for path in ROOT.rglob("*")
+        if path.is_file() and ".git" not in path.parts and "__pycache__" not in path.parts
+    ]
     if len(files) < 120:
         fail(f"expected at least 120 files, found {len(files)}", failures)
 

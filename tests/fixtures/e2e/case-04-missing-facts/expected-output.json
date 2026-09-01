@@ -1,0 +1,5 @@
+{
+  "status": "needs_supplement",
+  "reasons": ["missing_key_facts"],
+  "notes": "legal_timepoint 与多个 key_facts 字段（金额、时间、对方主张、结果）标注为【待补充】，evidence_status 为 unknown，按 QUALITY-GATES 的来源门槛需先补充材料再继续写作。"
+}
