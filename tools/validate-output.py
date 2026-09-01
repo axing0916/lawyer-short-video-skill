@@ -35,7 +35,7 @@ def validate(value: Any, schema: dict[str, Any], location: str, errors: list[str
         errors.append(f"{location}: must be one of {schema['enum']}")
     if isinstance(value, str):
         if len(value) < schema.get("minLength", 0):
-            errors.append(f"{location}: must not be empty")
+            errors.append(f"{location}: length must be at least {schema['minLength']}")
         if "pattern" in schema and not re.search(schema["pattern"], value):
             errors.append(f"{location}: does not match required pattern")
         if schema.get("format") == "date-time":
