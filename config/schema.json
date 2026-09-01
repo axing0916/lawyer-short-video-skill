@@ -1,0 +1,151 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Lawyer Short Video Skill - Input Schema",
+  "type": "object",
+  "required": [
+    "content_id",
+    "input_type",
+    "source_ids",
+    "deidentified",
+    "permission_status",
+    "legal_field",
+    "jurisdiction",
+    "legal_timepoint",
+    "audience",
+    "primary_objective",
+    "content_type",
+    "duration",
+    "persona",
+    "must_not_disclose"
+  ],
+  "properties": {
+    "content_id": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}-\\d{4}-\\d{4}$",
+      "description": "Unique content identifier, e.g., CV-2026-0001"
+    },
+    "input_type": {
+      "type": "string",
+      "enum": ["case", "article", "idea", "metrics"],
+      "description": "Type of input material"
+    },
+    "source_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^SRC-\\d{3}$"
+      },
+      "minItems": 1,
+      "description": "List of source IDs (e.g., SRC-001)"
+    },
+    "deidentified": {
+      "type": "boolean",
+      "description": "Confirmed by user that material is deidentified"
+    },
+    "permission_status": {
+      "type": "string",
+      "enum": ["full_public", "paraphrase_only", "internal_only", "requires_authorization"],
+      "description": "Publication permission level"
+    },
+    "legal_field": {
+      "type": "string",
+      "enum": [
+        "civil-loan",
+        "contract-dispute",
+        "company-law",
+        "family-law",
+        "criminal-defense",
+        "administrative-law",
+        "intellectual-property",
+        "other"
+      ],
+      "description": "Legal domain"
+    },
+    "jurisdiction": {
+      "type": "string",
+      "description": "Applicable jurisdiction (province/national), e.g., '北京', '全国', or '【待补充】'"
+    },
+    "legal_timepoint": {
+      "type": "string",
+      "description": "Legal application timepoint, e.g., '2025-01-01', '2024年下半年', or '【待补充】'"
+    },
+    "audience": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["general_public", "potential_clients", "industry_peers", "law_students", "other"]
+      },
+      "minItems": 1,
+      "description": "Target audience"
+    },
+    "primary_objective": {
+      "type": "string",
+      "enum": ["save", "discuss", "share", "explore", "professional_trust"],
+      "description": "Primary transmission objective"
+    },
+    "content_type": {
+      "type": "string",
+      "enum": ["story_driven", "educational_knowledge", "contrast_impact", "practical_tips"],
+      "description": "Content type"
+    },
+    "duration": {
+      "type": "string",
+      "enum": ["60s", "90s", "3min"],
+      "description": "Video duration"
+    },
+    "persona": {
+      "type": "string",
+      "enum": ["rational_practical", "firm_rights", "gentle_mediation"],
+      "description": "Speaker persona"
+    },
+    "must_not_disclose": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Explicitly forbidden disclosure information"
+    },
+    "key_facts": {
+      "type": "object",
+      "description": "For case type input only",
+      "properties": {
+        "case_stage": {
+          "type": "string",
+          "enum": ["dispute", "mediation", "lawsuit", "appeal", "enforcement"],
+          "description": "Case proceeding stage"
+        },
+        "parties": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": { "type": "string", "enum": ["plaintiff", "defendant", "third_party"] },
+              "description": { "type": "string", "description": "e.g., '甲方', 'A先生'" }
+            }
+          }
+        },
+        "amount_involved": {
+          "type": "string",
+          "description": "e.g., '数十万元', or '【内部核验，不对外】' if precise"
+        },
+        "time_range": {
+          "type": "string",
+          "description": "e.g., '2025年上半年'"
+        },
+        "evidence_status": {
+          "type": "string",
+          "enum": ["complete", "partial", "disputed", "unknown"],
+          "description": "Status of evidence"
+        },
+        "counterparty_claim": {
+          "type": "string",
+          "description": "Opposing party's main assertion"
+        },
+        "confirmed_result": {
+          "type": "string",
+          "description": "Confirmed case outcome, or '【待补充】'"
+        }
+      }
+    }
+  }
+}
