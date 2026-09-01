@@ -26,8 +26,34 @@ FICTIONAL_LABEL = "虚构教学情景"
 MISSING_MARKERS = ("【待补充】", "unknown")
 
 
+def _flatten_strings(value: object) -> list[str]:
+    """Recursively collect string leaves from nested dict/list structures."""
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, dict):
+        result: list[str] = []
+        for item in value.values():
+            result.extend(_flatten_strings(item))
+        return result
+    if isinstance(value, list):
+        result = []
+        for item in value:
+            result.extend(_flatten_strings(item))
+        return result
+    return []
+
+
 def evaluate(input_data: dict) -> dict:
-    """Apply QUALITY-GATES routing rules to a single input fixture."""
+    """Apply QUALITY-GATES routing rules to a single input fixture.
+
+    Rules are evaluated in order of severity (blocking issues first, then
+    review requirements, then supplement requirements) and the first
+    matching rule determines the result. Fixtures under
+    tests/fixtures/e2e/ are constructed so only one rule applies per
+    scenario; changing this order may require updating fixture
+    expected-output.json files whose inputs could trigger more than one
+    rule.
+    """
     reasons: list[str] = []
 
     if not input_data.get("source_ids"):
@@ -47,7 +73,7 @@ def evaluate(input_data: dict) -> dict:
         return {"status": "needs_legal_review", "reasons": ["legal_source_unverified"]}
 
     key_facts = input_data.get("key_facts", {})
-    flat_values = [str(value) for value in key_facts.values() if isinstance(value, str)]
+    flat_values = _flatten_strings(key_facts)
     if input_data.get("legal_timepoint") in MISSING_MARKERS or any(
         marker in value for value in flat_values for marker in MISSING_MARKERS
     ):

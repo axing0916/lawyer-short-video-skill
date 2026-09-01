@@ -70,7 +70,19 @@ jobs:
         id: perf_check
         if: contains(github.event.pull_request.labels.*.name, 'run-performance-check')
         continue-on-error: true
-        run: sh tests/run-all-tests.sh --quick
+        run: |
+          python3 -c "
+          import time, importlib.util
+          spec = importlib.util.spec_from_file_location('detect_pii', 'tools/detect-pii.py')
+          m = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(m)
+          text = '身份证110101199003077758电话13812345678' * 20000
+          start = time.perf_counter()
+          m.scan_text(text)
+          elapsed = time.perf_counter() - start
+          print(f'scanned {len(text)} chars in {elapsed:.3f}s')
+          raise SystemExit(0 if elapsed < 5 else 1)
+          "
 
       - name: Report failures on PR
         if: >-

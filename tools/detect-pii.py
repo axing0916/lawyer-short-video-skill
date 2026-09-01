@@ -55,14 +55,14 @@ def mask_text(text: str) -> str:
     findings = scan_text(text)
     if not findings:
         return text
-    label_by_value = {label: mask for label, _pattern, mask in PATTERNS}
+    mask_by_label = {label: mask for label, _pattern, mask in PATTERNS}
     result = text
     # Replace from the end so earlier offsets stay valid.
     ordered = sorted(findings, key=lambda item: int(item["start"]), reverse=True)
     for finding in ordered:
         start = int(finding["start"])
         end = start + len(finding["value"])
-        result = result[:start] + label_by_value[finding["type"]] + result[end:]
+        result = result[:start] + mask_by_label[finding["type"]] + result[end:]
     return result
 
 
