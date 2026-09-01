@@ -30,7 +30,7 @@ class TestPIIDetection(unittest.TestCase):
         self.assertEqual(res["status"], "blocked")
         self.assertTrue(any(item["type"] == "id_card" for item in res["high_risk"]))
         id_item = next(item for item in res["high_risk"] if item["type"] == "id_card")
-        self.assertTrue(id_item["masked_value"].startswith("110105********"))
+        self.assertEqual(id_item["masked_value"], "110105********002X")
 
     def test_id_card_15_detection(self):
         text = "初代身份证：320102750101001"

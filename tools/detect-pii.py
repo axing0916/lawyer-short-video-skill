@@ -90,8 +90,6 @@ def detect_pii(text: str) -> dict[str, Any]:
     medium_risk: list[dict[str, Any]] = []
 
     lines = text.splitlines()
-    # Map line_index to list of (start, end) spans of already-detected high-risk entities
-    claimed_spans_by_line: dict[int, list[tuple[int, int]]] = {}
 
     for line_idx, line in enumerate(lines, start=1):
         line_spans: list[tuple[int, int]] = []
