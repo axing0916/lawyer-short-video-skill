@@ -29,7 +29,7 @@ RE_USCI = re.compile(
     r"(?<![0-9A-HJ-NPQRTUWXY])([1-9ANY][1-9]\d{6}[0-9A-HJ-NPQRTUWXY]{10})(?![0-9A-HJ-NPQRTUWXY])"
 )
 RE_BANK_CARD = re.compile(
-    r"(?<!\d)([1-9]\d{3}[ -]?\d{4}[ -]?\d{4}[ -]?\d{4,7})(?!\d)"
+    r"(?<!\d)([1-9]\d{15,18}|[1-9]\d{3}(?:[ -]\d{4}){3}(?:[ -]\d{1,4})?)(?!\d)"
 )
 RE_CASE_NUMBER = re.compile(
     r"([（\(〔\[【]\s*(?:19|20)\d{2}\s*[）\)〕\]】][\u4e00-\u9fa5A-Za-z0-9]{2,25}?\d+号)"
@@ -210,13 +210,13 @@ def detect_pii(text: str) -> dict[str, Any]:
     total_count = len(high_risk) + len(medium_risk)
     detected = total_count > 0
 
-    if len(high_risk) > 0:
+    if high_risk:
         status = "blocked"
         recommendations = [
             "【阻断】检测到高风险个人/机构敏感标识符（身份证、手机号、信用代码或银行卡号）。",
             "根据系统安全规范，请先在本地对材料进行彻底脱敏（如替换为'张某'、'某公司'、'138****0000'等）后再行输入。"
         ]
-    elif len(medium_risk) > 0:
+    elif medium_risk:
         status = "needs_review"
         recommendations = [
             "【警告】检测到中风险案号标识符，可能导致当事人或案情被公开检索重识别。",
@@ -365,7 +365,12 @@ def main() -> int:
             print(json.dumps(err_obj, ensure_ascii=False, indent=2) if args.format == "json" else err_obj["error"])
             return 1
         if target_path.is_file():
-            content_to_scan = target_path.read_text(encoding="utf-8")
+            try:
+                content_to_scan = target_path.read_text(encoding="utf-8")
+            except (UnicodeDecodeError, OSError) as e:
+                err_obj = {"error": f"Failed to read file {target_path}: {e}"}
+                print(json.dumps(err_obj, ensure_ascii=False, indent=2) if args.format == "json" else err_obj["error"])
+                return 1
             source_name = str(target_path)
         else:
             # Directory scan

@@ -63,6 +63,13 @@ class TestPIIDetection(unittest.TestCase):
         card_item = next(item for item in res["high_risk"] if item["type"] == "bank_card")
         self.assertTrue("622202" in card_item["masked_value"])
 
+        # Separated format (16-digit)
+        text_spaced = "卡号：6222 0212 3456 7890"
+        res_spaced = detect_pii(text_spaced)
+        self.assertTrue(res_spaced["detected"])
+        self.assertEqual(res_spaced["status"], "blocked")
+        self.assertTrue(any(item["type"] == "bank_card" for item in res_spaced["high_risk"]))
+
     def test_case_number_detection(self):
         text = "本纠纷见判决书（2023）京01民初1234号。"
         res = detect_pii(text)
