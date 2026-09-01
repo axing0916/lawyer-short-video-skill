@@ -373,7 +373,11 @@ def main() -> int:
             total_high = 0
             total_med = 0
             for file_path in target_path.rglob("*"):
-                if file_path.is_file() and not file_path.name.startswith(".") and "__pycache__" not in file_path.parts:
+                if (
+                    file_path.is_file()
+                    and not any(part.startswith(".") for part in file_path.parts)
+                    and "__pycache__" not in file_path.parts
+                ):
                     try:
                         text = file_path.read_text(encoding="utf-8")
                     except (UnicodeDecodeError, OSError):
