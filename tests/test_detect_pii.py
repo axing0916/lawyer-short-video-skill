@@ -10,8 +10,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from importlib.machinery import SourceFileLoader
-detect_pii_module = SourceFileLoader("detect_pii", str(ROOT / "tools" / "detect-pii.py")).load_module()
+import importlib.util
+
+spec = importlib.util.spec_from_file_location("detect_pii", str(ROOT / "tools" / "detect-pii.py"))
+if spec is None or spec.loader is None:
+    raise ImportError("Could not load detect-pii.py")
+detect_pii_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(detect_pii_module)
 detect_pii = detect_pii_module.detect_pii
 
 
@@ -86,6 +91,24 @@ class TestPIIDetection(unittest.TestCase):
         self.assertEqual(proc.returncode, 1)  # blocked exit code
         data = json.loads(proc.stdout)
         self.assertEqual(data["status"], "blocked")
+
+    def test_cli_medium_risk_exit_code(self):
+        proc = subprocess.run(
+            [sys.executable, str(ROOT / "tools" / "detect-pii.py"), "--text", "（2023）京01民初1234号", "--format", "text"],
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(proc.returncode, 2)  # needs_review exit code
+        self.assertIn("NEEDS_REVIEW", proc.stdout)
+
+    def test_cli_clean_exit_code(self):
+        proc = subprocess.run(
+            [sys.executable, str(ROOT / "tools" / "detect-pii.py"), "--text", "甲向乙转账", "--format", "text"],
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(proc.returncode, 0)  # passed exit code
+        self.assertIn("PASSED", proc.stdout)
 
 
 if __name__ == "__main__":

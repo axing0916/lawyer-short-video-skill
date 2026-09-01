@@ -79,21 +79,29 @@ def check_id_card_checksum(id_card: str) -> bool:
         return False
 
 
+def spans_overlap(span1: tuple[int, int], span2: tuple[int, int]) -> bool:
+    """Check if two 1D intervals [start, end) overlap."""
+    return max(span1[0], span2[0]) < min(span1[1], span2[1])
+
+
 def detect_pii(text: str) -> dict[str, Any]:
     """Scan text for sensitive PII identifiers and return categorized results."""
     high_risk: list[dict[str, Any]] = []
     medium_risk: list[dict[str, Any]] = []
 
     lines = text.splitlines()
-    seen_spans: set[tuple[int, int]] = set()
+    # Map line_index to list of (start, end) spans of already-detected high-risk entities
+    claimed_spans_by_line: dict[int, list[tuple[int, int]]] = {}
 
     for line_idx, line in enumerate(lines, start=1):
+        line_spans: list[tuple[int, int]] = []
+
         # 1. Detect ID cards (18-digit)
         for m in RE_ID_CARD_18.finditer(line):
             val = m.group(1)
             span = (m.start(1), m.end(1))
             is_valid_checksum = check_id_card_checksum(val)
-            seen_spans.add((line_idx, span[0]))
+            line_spans.append(span)
             high_risk.append({
                 "type": "id_card",
                 "type_label": "大陆身份证号(18位)",
@@ -109,10 +117,11 @@ def detect_pii(text: str) -> dict[str, Any]:
         # 2. Detect ID cards (15-digit)
         for m in RE_ID_CARD_15.finditer(line):
             val = m.group(1)
-            # Avoid subset of 18-digit match
-            if any(line_idx == s_line and abs(m.start(1) - s_col) < 5 for s_line, s_col in seen_spans):
+            span = (m.start(1), m.end(1))
+            # Avoid subset/overlap with 18-digit ID card match
+            if any(spans_overlap(span, s) for s in line_spans):
                 continue
-            seen_spans.add((line_idx, m.start(1)))
+            line_spans.append(span)
             high_risk.append({
                 "type": "id_card",
                 "type_label": "大陆身份证号(15位)",
@@ -127,10 +136,13 @@ def detect_pii(text: str) -> dict[str, Any]:
         # 3. Detect USCI (统一社会信用代码)
         for m in RE_USCI.finditer(line):
             val = m.group(1)
+            span = (m.start(1), m.end(1))
             # Avoid matching pure numbers already matched as ID card
             if val.isdigit() and len(val) == 18:
                 continue
-            seen_spans.add((line_idx, m.start(1)))
+            if any(spans_overlap(span, s) for s in line_spans):
+                continue
+            line_spans.append(span)
             high_risk.append({
                 "type": "usci",
                 "type_label": "统一社会信用代码",
@@ -145,9 +157,11 @@ def detect_pii(text: str) -> dict[str, Any]:
         # 4. Detect Mobile Phone (11 digits)
         for m in RE_PHONE.finditer(line):
             val = m.group(1)
+            span = (m.start(1), m.end(1))
             # Check if this overlaps with an already identified ID card or USCI
-            if any(line_idx == s_line and abs(m.start(1) - s_col) < 18 for s_line, s_col in seen_spans):
+            if any(spans_overlap(span, s) for s in line_spans):
                 continue
+            line_spans.append(span)
             high_risk.append({
                 "type": "phone",
                 "type_label": "手机号码",
@@ -165,10 +179,11 @@ def detect_pii(text: str) -> dict[str, Any]:
             digits = re.sub(r"\D", "", raw_val)
             if not (16 <= len(digits) <= 19):
                 continue
-            # If length is 18 and looks like ID card, skip
-            if len(digits) == 18 and any(line_idx == s_line and abs(m.start(1) - s_col) < 5 for s_line, s_col in seen_spans):
+            span = (m.start(1), m.end(1))
+            # If overlapping with ID card or USCI, skip
+            if any(spans_overlap(span, s) for s in line_spans):
                 continue
-            # Only consider standard bank card prefixes (e.g. 62, 4, 5, 3, etc.)
+            line_spans.append(span)
             high_risk.append({
                 "type": "bank_card",
                 "type_label": "银行卡号",
@@ -193,6 +208,8 @@ def detect_pii(text: str) -> dict[str, Any]:
                 "column": m.start(1) + 1,
                 "description": "检测到具体司法审判/执行案号，易被检索关联公开裁判文书，具有重识别风险。"
             })
+
+        claimed_spans_by_line[line_idx] = line_spans
 
     total_count = len(high_risk) + len(medium_risk)
     detected = total_count > 0
@@ -280,14 +297,44 @@ def run_self_test() -> bool:
     return all_passed
 
 
+def format_text_report(results: dict[str, Any]) -> str:
+    """Format human-readable text report."""
+    status = results.get("status", "unknown")
+    summary = results.get("summary", {})
+    lines = [
+        f"=== PII 检测报告 ===",
+        f"状态: {status.upper()}",
+        f"总计检出: {summary.get('total_count', 0)} (高风险: {summary.get('high_risk_count', 0)}, 中风险: {summary.get('medium_risk_count', 0)})",
+    ]
+    if results.get("high_risk"):
+        lines.append("\n【高风险项 (阻断发布)】:")
+        for item in results["high_risk"]:
+            lines.append(f"  - [{item['type_label']}] 行 {item['line']}: {item['masked_value']} ({item['description']})")
+    if results.get("medium_risk"):
+        lines.append("\n【中风险项 (需人工核验)】:")
+        for item in results["medium_risk"]:
+            lines.append(f"  - [{item['type_label']}] 行 {item['line']}: {item['masked_value']} ({item['description']})")
+    if results.get("recommendations"):
+        lines.append("\n【处理建议】:")
+        for rec in results["recommendations"]:
+            lines.append(f"  * {rec}")
+    return "\n".join(lines)
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Automated PII detection for legal short video materials.")
+    parser = argparse.ArgumentParser(
+        description="Automated PII detection for legal short video materials.\n"
+                    "Exit codes:\n"
+                    "  0: Passed (clean)\n"
+                    "  1: Blocked (high risk PII detected)\n"
+                    "  2: Needs Review (medium risk PII detected)"
+    )
     parser.add_argument("path", nargs="?", help="File or directory path to scan.")
     parser.add_argument("--text", "-t", help="Raw text string to scan directly.")
     parser.add_argument("--file", "-f", help="Specific file path to scan.")
     parser.add_argument("--stdin", action="store_true", help="Read input text from standard input.")
     parser.add_argument("--self-test", action="store_true", help="Run internal self-tests.")
-    parser.add_argument("--json", action="store_true", default=True, help="Output results as JSON (default: True).")
+    parser.add_argument("--format", choices=["json", "text"], default="json", help="Output format: json (default) or text.")
 
     args = parser.parse_args()
 
@@ -312,7 +359,8 @@ def main() -> int:
     elif args.file or args.path:
         target_path = Path(args.file or args.path)
         if not target_path.exists():
-            print(json.dumps({"error": f"File or path not found: {target_path}"}, ensure_ascii=False, indent=2))
+            err_obj = {"error": f"File or path not found: {target_path}"}
+            print(json.dumps(err_obj, ensure_ascii=False, indent=2) if args.format == "json" else err_obj["error"])
             return 1
         if target_path.is_file():
             content_to_scan = target_path.read_text(encoding="utf-8")
@@ -323,7 +371,7 @@ def main() -> int:
             total_high = 0
             total_med = 0
             for file_path in target_path.rglob("*"):
-                if file_path.is_file() and not file_path.name.startswith("."):
+                if file_path.is_file() and not file_path.name.startswith(".") and "__pycache__" not in file_path.parts:
                     try:
                         text = file_path.read_text(encoding="utf-8")
                     except (UnicodeDecodeError, OSError):
@@ -335,8 +383,18 @@ def main() -> int:
                         total_med += res["summary"]["medium_risk_count"]
             dir_results["total_detected_files"] = len(dir_results["files"])
             dir_results["overall_status"] = "blocked" if total_high > 0 else ("needs_review" if total_med > 0 else "passed")
-            print(json.dumps(dir_results, ensure_ascii=False, indent=2))
-            return 1 if total_high > 0 else 0
+            if args.format == "json":
+                print(json.dumps(dir_results, ensure_ascii=False, indent=2))
+            else:
+                print(f"=== 目录扫描完成 ===")
+                print(f"总体状态: {dir_results['overall_status']}")
+                print(f"检出敏感文件数: {dir_results['total_detected_files']}")
+                print(f"高风险项: {total_high}, 中风险项: {total_med}")
+            if total_high > 0:
+                return 1
+            elif total_med > 0:
+                return 2
+            return 0
     else:
         # Default help or reading stdin if piped
         if not sys.stdin.isatty():
@@ -348,9 +406,16 @@ def main() -> int:
 
     results = detect_pii(content_to_scan)
     results["source"] = source_name
-    print(json.dumps(results, ensure_ascii=False, indent=2))
+    if args.format == "json":
+        print(json.dumps(results, ensure_ascii=False, indent=2))
+    else:
+        print(format_text_report(results))
 
-    return 1 if results["status"] == "blocked" else 0
+    if results["status"] == "blocked":
+        return 1
+    elif results["status"] == "needs_review":
+        return 2
+    return 0
 
 
 if __name__ == "__main__":
