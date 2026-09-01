@@ -22,6 +22,7 @@ REQUIRED = [
     "libraries/cta-library.md",
     "config/version.json",
     "checklists/pre-publish.md",
+    "tools/detect-pii.py",
 ]
 
 
@@ -31,7 +32,11 @@ def fail(message: str, failures: list[str]) -> None:
 
 def main() -> int:
     failures: list[str] = []
-    files = [path for path in ROOT.rglob("*") if path.is_file() and ".git" not in path.parts]
+    files = [
+        path
+        for path in ROOT.rglob("*")
+        if path.is_file() and ".git" not in path.parts and "__pycache__" not in path.parts and not path.name.endswith(".pyc")
+    ]
     if len(files) < 120:
         fail(f"expected at least 120 files, found {len(files)}", failures)
 
@@ -92,6 +97,26 @@ def main() -> int:
         )
         if result.returncode:
             fail(f"{script} failed:\n{result.stdout}{result.stderr}", failures)
+
+    pii_result = subprocess.run(
+        [sys.executable, str(ROOT / "tools" / "detect-pii.py"), "--self-test"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if pii_result.returncode:
+        fail(f"detect-pii.py self-test failed:\n{pii_result.stdout}{pii_result.stderr}", failures)
+
+    unit_test = subprocess.run(
+        [sys.executable, "-m", "unittest", "discover", "-s", str(ROOT / "tests"), "-p", "test_*.py"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if unit_test.returncode:
+        fail(f"unit tests failed:\n{unit_test.stdout}{unit_test.stderr}", failures)
 
     if failures:
         print("VALIDATION FAILED")
