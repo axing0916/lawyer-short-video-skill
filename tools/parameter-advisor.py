@@ -131,6 +131,7 @@ def save_to_template(params: dict[str, str], output_path: Path) -> None:
         "## 目标受众与问题\n\n- 受众：`【待补充】`\n- 想解决的问题：`【待补充】`\n\n"
         "## 不得披露\n\n- `【待补充】`\n"
     )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(content, encoding="utf-8")
     print(f"已保存参数模板至：{output_path}")
 
