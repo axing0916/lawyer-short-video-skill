@@ -1,0 +1,30 @@
+{
+  "content_id": "CV-2026-0103",
+  "input_type": "case",
+  "source_ids": ["SRC-103"],
+  "deidentified": true,
+  "permission_status": "internal_only",
+  "legal_field": "family-law",
+  "jurisdiction": "上海",
+  "legal_timepoint": "2025-03-01",
+  "audience": ["general_public"],
+  "primary_objective": "professional_trust",
+  "content_type": "practical_tips",
+  "duration": "90s",
+  "persona": "gentle_mediation",
+  "must_not_disclose": ["当事人身份证号", "联系方式"],
+  "fictional": false,
+  "legal_source_verified": true,
+  "narrative_text": "当事人张某（身份证号110101199003077758，联系电话13812345678）就离婚析产事宜咨询，案号（2024）沪01民初1234号。",
+  "key_facts": {
+    "case_stage": "lawsuit",
+    "parties": [
+      { "role": "plaintiff", "description": "张某" }
+    ],
+    "amount_involved": "【内部核验，不对外】",
+    "time_range": "2025年初",
+    "evidence_status": "partial",
+    "counterparty_claim": "对方主张房产为婚前个人财产",
+    "confirmed_result": "【待补充】"
+  }
+}

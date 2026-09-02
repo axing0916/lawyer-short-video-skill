@@ -1,0 +1,31 @@
+{
+  "content_id": "CV-2026-0104",
+  "input_type": "case",
+  "source_ids": ["SRC-104"],
+  "deidentified": true,
+  "permission_status": "paraphrase_only",
+  "legal_field": "company-law",
+  "jurisdiction": "深圳",
+  "legal_timepoint": "【待补充】",
+  "audience": ["industry_peers"],
+  "primary_objective": "save",
+  "content_type": "educational_knowledge",
+  "duration": "3min",
+  "persona": "rational_practical",
+  "must_not_disclose": ["公司名称", "股东姓名"],
+  "fictional": false,
+  "legal_source_verified": true,
+  "narrative_text": "某公司股东就股权代持发生争议，具体经过和结果尚待当事人补充确认。",
+  "key_facts": {
+    "case_stage": "dispute",
+    "parties": [
+      { "role": "plaintiff", "description": "甲股东" },
+      { "role": "defendant", "description": "乙股东" }
+    ],
+    "amount_involved": "【待补充】",
+    "time_range": "【待补充】",
+    "evidence_status": "unknown",
+    "counterparty_claim": "【待补充】",
+    "confirmed_result": "【待补充】"
+  }
+}

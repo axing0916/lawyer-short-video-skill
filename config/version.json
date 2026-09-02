@@ -1,12 +1,34 @@
 {
-  "version": "1.0.0-beta.2",
-  "release_date": "2026-08-27",
-  "status": "beta",
+  "version": "1.0.0",
+  "release_date": "2026-09-01",
+  "status": "stable",
   "schema_version": 1,
+  "phases_completed": {
+    "phase_1": {
+      "name": "Security Hardening",
+      "status": "completed",
+      "features": ["PII Detection", "Legal Verification Checklist", "Fictional Content Marking"]
+    },
+    "phase_2": {
+      "name": "Architecture Refinement",
+      "status": "completed",
+      "features": ["Output Schema", "Quality Gates", "Parameter Matrix", "Version Tracking"]
+    },
+    "phase_3": {
+      "name": "User Experience Improvements",
+      "status": "completed",
+      "features": ["Parameter Advisor", "Mistake Examples", "WorkBuddy Roadmap"]
+    },
+    "phase_4": {
+      "name": "Test Automation",
+      "status": "completed",
+      "features": ["E2E Tests", "CI/CD Workflow", "Performance Baseline"]
+    }
+  },
   "known_limitations": [
     "legal conclusions require human verification",
     "no automatic platform publishing",
     "no bundled cloud or WorkBuddy synchronization",
-    "no claimed performance benchmarks"
+    "performance figures in tests/performance-testing.md are local dev-environment baselines, not production SLAs"
   ]
 }

@@ -1,0 +1,5 @@
+{
+  "status": "blocked",
+  "reasons": ["fictional_label_required"],
+  "notes": "narrative_text 声明为虚构（fictional=true），但正文缺少「虚构教学情景」强制标记，按 QUALITY-GATES 的表达门槛阻止发布。"
+}
