@@ -6,6 +6,7 @@
 - `check-links.py`：Markdown 内部链接；
 - `count-content.py`：文件、字符和分类统计；
 - `content-audit.py`：检查错误日期、虚假支持信息和未标注教学情景；
+- `parameter-advisor.py`：交互式参数选择顾问，评估传播目标与内容类型的搭配；
 - `setup.sh`：运行环境与仓库校验；
 - `version-check.sh`：版本真源一致性。
 - `validate-output.py <输出 JSON>`：按 `config/output-schema.json` 检查生成交付包；`--schema-check` 检查内置 draft-07 声明。
