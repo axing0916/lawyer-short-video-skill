@@ -1,0 +1,31 @@
+{
+  "content_id": "CV-2026-0101",
+  "input_type": "case",
+  "source_ids": ["SRC-101"],
+  "deidentified": true,
+  "permission_status": "paraphrase_only",
+  "legal_field": "civil-loan",
+  "jurisdiction": "北京",
+  "legal_timepoint": "2025-06-01",
+  "audience": ["general_public"],
+  "primary_objective": "explore",
+  "content_type": "story_driven",
+  "duration": "60s",
+  "persona": "rational_practical",
+  "must_not_disclose": ["双方真实姓名", "案号", "具体金额"],
+  "fictional": false,
+  "legal_source_verified": true,
+  "narrative_text": "甲方与乙方就一笔民间借贷发生纠纷，双方在庭前调解中达成分期还款方案，具体身份和金额已做脱敏处理。",
+  "key_facts": {
+    "case_stage": "mediation",
+    "parties": [
+      { "role": "plaintiff", "description": "甲方" },
+      { "role": "defendant", "description": "乙方" }
+    ],
+    "amount_involved": "数十万元",
+    "time_range": "2025年上半年",
+    "evidence_status": "complete",
+    "counterparty_claim": "对方主张已部分还款",
+    "confirmed_result": "调解达成分期还款协议"
+  }
+}

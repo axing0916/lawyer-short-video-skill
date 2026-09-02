@@ -1,0 +1,30 @@
+{
+  "content_id": "CV-2026-0102",
+  "input_type": "idea",
+  "source_ids": ["SRC-102"],
+  "deidentified": true,
+  "permission_status": "full_public",
+  "legal_field": "contract-dispute",
+  "jurisdiction": "全国",
+  "legal_timepoint": "2025-01-01",
+  "audience": ["general_public", "potential_clients"],
+  "primary_objective": "discuss",
+  "content_type": "story_driven",
+  "duration": "60s",
+  "persona": "firm_rights",
+  "must_not_disclose": [],
+  "fictional": true,
+  "legal_source_verified": true,
+  "narrative_text": "假设小李签了一份合同却没仔细看条款，结果吃了大亏——这是一个用来讲解审查合同要点的教学案例。",
+  "key_facts": {
+    "case_stage": "dispute",
+    "parties": [
+      { "role": "plaintiff", "description": "小李（虚构人物）" }
+    ],
+    "amount_involved": "【待补充】",
+    "time_range": "【待补充】",
+    "evidence_status": "unknown",
+    "counterparty_claim": "【待补充】",
+    "confirmed_result": "【待补充】"
+  }
+}

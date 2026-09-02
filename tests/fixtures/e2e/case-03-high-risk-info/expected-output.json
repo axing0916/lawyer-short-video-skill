@@ -1,0 +1,5 @@
+{
+  "status": "blocked",
+  "reasons": ["pii_detected"],
+  "notes": "输入声明 deidentified=true，但 narrative_text 中仍检测到身份证号、手机号与案号等可识别信息，按 QUALITY-GATES 的脱敏门槛阻止发布，需返回脱敏。"
+}
