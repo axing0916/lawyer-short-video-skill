@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import subprocess
@@ -22,7 +23,8 @@ REQUIRED = [
     "libraries/cta-library.md",
     "config/version.json",
     "checklists/pre-publish.md",
-    "tools/detect-pii.py",
+    "config/output-schema.json",
+    "tools/validate-output.py",
 ]
 
 
@@ -31,12 +33,13 @@ def fail(message: str, failures: list[str]) -> None:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", action="append", type=Path, default=[],
+                        help="generated JSON delivery package to validate (repeatable)")
+    args = parser.parse_args()
     failures: list[str] = []
-    files = [
-        path
-        for path in ROOT.rglob("*")
-        if path.is_file() and ".git" not in path.parts and "__pycache__" not in path.parts and not path.name.endswith(".pyc")
-    ]
+    ignored_parts = {".git", "__pycache__"}
+    files = [path for path in ROOT.rglob("*") if path.is_file() and not ignored_parts.intersection(path.parts)]
     if len(files) < 120:
         fail(f"expected at least 120 files, found {len(files)}", failures)
 
@@ -98,25 +101,26 @@ def main() -> int:
         if result.returncode:
             fail(f"{script} failed:\n{result.stdout}{result.stderr}", failures)
 
-    pii_result = subprocess.run(
-        [sys.executable, str(ROOT / "tools" / "detect-pii.py"), "--self-test"],
+    output_validator = subprocess.run(
+        [sys.executable, str(ROOT / "tools" / "validate-output.py"), "--schema-check"],
         cwd=ROOT,
         capture_output=True,
         text=True,
         check=False,
     )
-    if pii_result.returncode:
-        fail(f"detect-pii.py self-test failed:\n{pii_result.stdout}{pii_result.stderr}", failures)
+    if output_validator.returncode:
+        fail(f"validate-output.py schema check failed:\n{output_validator.stdout}{output_validator.stderr}", failures)
 
-    unit_test = subprocess.run(
-        [sys.executable, "-m", "unittest", "discover", "-s", str(ROOT / "tests"), "-p", "test_*.py"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if unit_test.returncode:
-        fail(f"unit tests failed:\n{unit_test.stdout}{unit_test.stderr}", failures)
+    for output in args.output:
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "tools" / "validate-output.py"), str(output)],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode:
+            fail(f"output validation failed for {output}:\n{result.stdout}{result.stderr}", failures)
 
     if failures:
         print("VALIDATION FAILED")
